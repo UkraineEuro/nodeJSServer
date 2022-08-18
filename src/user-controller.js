@@ -19,7 +19,7 @@ const getUser = async (email) => {
     if(foundUsers){
       resolve(foundUsers)
     } else{
-      reject(`Users with email not foud`)
+      reject(`Users with email ${email} not foud`)
     }
   })
 }

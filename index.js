@@ -7,20 +7,7 @@ const csvWriter = require('./write-csv')
 
 const PORT = 3000
 
-// const emitter = new EventEmitter()
 
-// class Router {
-//     constructor(){
-//         this.endpoints = {}
-//     }
-//     request(method = "GET",  path, handler){
-//         if(!this.endpoints[path]){
-//             this.endpoints[path] = {}
-//         }
-
-//         const endpoint = this.endpoints[path]
-//     }
-// }
 
 
 const server = http.createServer((req, res) => {
@@ -40,17 +27,25 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify(err))
         })
     } else if(parsedUrlPathname === "/email" && req.method === "GET"){
+      //getting data from database
       Controller.getUser(parsedUrlParameters.email)
       .then(message => {
-        res.end(JSON.stringify(message))})
+        //making list uf full names
+        userList = []
+        for(var i=0; i<message.length;i++){
+          userList.push(message[i].name + " " + message[i].surname)
+        }
+        res.end(JSON.stringify(userList))})
         .catch(err =>{
           res.writeHead(404, {"Content-Type": "application/json"})
           res.end(JSON.stringify(err))
         })
     }
     else if(parsedUrlPathname === 'reqres.in/api/users', req.method === 'GET'){
+      //sending request to https://reqres.in/api/users
       request.sendRequest(url.method, `https://${parsedUrlPathname}`)
         .then(data => {
+          //creating .csv file
           csvWriter.writeRecords(data.data)})
         .then(()=>{res.end("Done")})
         .catch(err => {
